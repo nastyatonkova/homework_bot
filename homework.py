@@ -33,8 +33,8 @@ HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
 HOMEWORK_STATUSES = {
     'reviewing': 'Работа взята в ревью,',
-    'approved': 'Ревью успешно пройдено',
-    'rejected': 'В работе есть ошибки, нужно поправить.'
+    'approved': 'Работа проверена: ревьюеру всё понравилось. Ура!',
+    'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
 
 
@@ -123,9 +123,9 @@ def check_tokens():
     tokens = [PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]
     for token in tokens:
         if token is None:
-            logging.critical('not found environmental token')
+            logging.critical('Not found environmental token')
             return False
-    logging.info('successful found all tokens')
+    logging.info('Successfuly found all tokens')
     return True
 
 
