@@ -1,9 +1,3 @@
-class SendMessageFailure(Exception):
-    """Exception by sending a message."""
-
-    pass
-
-
 class APIResponseStatusCodeException(Exception):
     """Exception by requesting the API."""
 
@@ -16,19 +10,7 @@ class CheckResponseException(Exception):
     pass
 
 
-class UnknownHWStatusException(Exception):
-    """Exception by unknown status of homework."""
-
-    pass
-
-
 class MissingRequiredTokenException(Exception):
     """Exception by missing of required tokens."""
-
-    pass
-
-
-class IncorrectAPIResponseException(Exception):
-    """Exception by incorrect answer from API."""
 
     pass
