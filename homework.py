@@ -36,11 +36,11 @@ def send_message(bot, message):
     """Sending message to the chat."""
     try:
         result = bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
-        logger.info('Message sent')
+        logger.info('Message sent successfully')
     except telegram.error.TelegramError as telegram_error:
-        print(f'Error while sending the message to chat: {telegram_error}')
-        result = None
-
+        raise telegram.error.TelegramError(
+            f'Error while sending the message to chat: {telegram_error}'
+        ) from telegram_error
     return result
 
 
@@ -62,13 +62,13 @@ def get_api_answer(current_timestamp):
     params = {'from_date': timestamp}
     try:
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
+        logger.info('Trying to connect to endpoint')
         if response.status_code != HTTPStatus.OK:
-            msg = 'Error by requesting the endpoint'
-            raise exceptions.APIResponseStatusCodeException(msg)
-        else:
-            return response.json()
+            raise Exception('f Error by requesting the endpoint')
     except Exception as error:
         raise Exception(f'Error by requesting the endpoint: {error}')
+    else:
+        return response.json()
 
 
 def check_response(response):
@@ -93,8 +93,11 @@ def check_response(response):
 
 
 def parse_status(homework):
-    """Gets the status of homework."""
+    """Getting the information and status of homework."""
     homework_name = homework['homework_name']
+    if homework_name is None:
+        msg = ('Access error by homework_name')
+        raise exceptions.CheckResponseException(msg)
     status = homework['status']
     if status not in HOMEWORK_VERDICTS:
         raise ValueError(f'Unknown status of '
@@ -133,11 +136,17 @@ def main():
                 status_old = status
             current_timestamp = response.get('current_date')
         except Exception as error:
-            message = f'Error in programm: {error}'
-            if status_old != message:
-                send_message(bot, message)
-            status_old = message
-            logger.error(f'Error in programm: {error}')
+            error_message = f'Error in programm: {error}'
+            status_old = error_message
+            logging.exception(error_message)
+        try:
+            if status != status_old:
+                send_message(status)
+                status_old = status
+        except telegram.error.TelegramError as telegram_error:
+            error_message = f'Error in programm: {telegram_error}'
+            logging.exception(error_message)
+
         finally:
             time.sleep(RETRY_TIME)
 
