@@ -64,9 +64,11 @@ def get_api_answer(current_timestamp):
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
         logger.info('Trying to connect to endpoint')
         if response.status_code != HTTPStatus.OK:
-            raise Exception('f Error by requesting the endpoint')
-    except Exception as error:
-        raise Exception(f'Error by requesting the endpoint: {error}')
+            msg = ('Error by requesting the endpoint')
+            raise exceptions.APIResponseStatusCodeException(msg)
+    except exceptions.APIResponseStatusCodeException as error:
+        msg = (f'Error by requesting the endpoint: {error}')
+        raise exceptions.APIResponseStatusCodeException(msg)
     else:
         return response.json()
 
@@ -94,16 +96,17 @@ def check_response(response):
 
 def parse_status(homework):
     """Getting the information and status of homework."""
-    homework_name = homework['homework_name']
-    if homework_name is None:
-        msg = ('Access error by homework_name')
-        raise exceptions.CheckResponseException(msg)
-    status = homework['status']
+    homework_name = homework.get('homework_name')
+    status = homework.get('status')
+    hw_verdict = HOMEWORK_VERDICTS[status]
     if status not in HOMEWORK_VERDICTS:
         raise ValueError(f'Unknown status of '
                          f'homework {status}')
+    if homework_name is None:
+        msg = ('Access error by homework_name')
+        raise exceptions.CheckResponseException(msg)
     return (f'Изменился статус проверки '
-            f'работы "{homework_name}". {HOMEWORK_VERDICTS[status]}')
+            f'работы "{homework_name}". {hw_verdict}')
 
 
 def check_tokens():
@@ -129,24 +132,18 @@ def main():
         try:
             response = get_api_answer(current_timestamp)
             homework = check_response(response)
-            if homework:
-                status = parse_status(homework[0])
-                if status_old != status:
-                    send_message(bot, status)
+            status = parse_status(homework[0])
+            if status_old != status:
+                send_message(bot, status)
                 status_old = status
             current_timestamp = response.get('current_date')
-        except Exception as error:
+        except exceptions.APIResponseStatusCodeException as error:
             error_message = f'Error in programm: {error}'
             status_old = error_message
             logging.exception(error_message)
-        try:
-            if status != status_old:
-                send_message(status)
-                status_old = status
         except telegram.error.TelegramError as telegram_error:
             error_message = f'Error in programm: {telegram_error}'
             logging.exception(error_message)
-
         finally:
             time.sleep(RETRY_TIME)
 
