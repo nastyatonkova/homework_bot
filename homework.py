@@ -96,14 +96,16 @@ def check_response(response):
 def parse_status(homework):
     """Getting the information and status of homework."""
     homework_name = homework.get('homework_name')
+    if homework_name is None:
+        msg = ('Access error by homework_name')
+        raise KeyError(msg)
     status = homework.get('status')
+    if status is None:
+        raise KeyError(f'Key error in {status}')
     hw_verdict = HOMEWORK_VERDICTS[status]
     if status not in HOMEWORK_VERDICTS:
         raise ValueError(f'Unknown status of '
                          f'homework {status}')
-    if homework_name is None:
-        msg = ('Access error by homework_name')
-        raise exceptions.CheckResponseException(msg)
     return (f'Изменился статус проверки '
             f'работы "{homework_name}". {hw_verdict}')
 
@@ -140,6 +142,7 @@ def main():
             error_message = f'Error in programm: {error}'
             status_old = error_message
             logging.exception(error_message)
+            send_message(bot, error_message)
         except telegram.error.TelegramError as telegram_error:
             error_message = f'Error in programm: {telegram_error}'
             logging.exception(error_message)
