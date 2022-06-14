@@ -61,14 +61,13 @@ def get_api_answer(current_timestamp):
     timestamp = current_timestamp or int(time.time())
     params = {'from_date': timestamp}
     try:
-        response = requests.get(ENDPOINT, headers=HEADERS, params=params)
         logger.info('Trying to connect to endpoint')
+        response = requests.get(ENDPOINT, headers=HEADERS, params=params)
         if response.status_code != HTTPStatus.OK:
             msg = ('Error by requesting the endpoint')
             raise exceptions.APIResponseStatusCodeException(msg)
-    except exceptions.APIResponseStatusCodeException as error:
-        msg = (f'Error by requesting the endpoint: {error}')
-        raise exceptions.APIResponseStatusCodeException(msg)
+    except Exception as error:
+        raise Exception(f'Error by requesting the endpoint: {error}')
     else:
         return response.json()
 
