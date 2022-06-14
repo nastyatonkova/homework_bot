@@ -102,10 +102,10 @@ def parse_status(homework):
     status = homework.get('status')
     if status is None:
         raise KeyError(f'Key error in {status}')
-    hw_verdict = HOMEWORK_VERDICTS[status]
     if status not in HOMEWORK_VERDICTS:
         raise ValueError(f'Unknown status of '
                          f'homework {status}')
+    hw_verdict = HOMEWORK_VERDICTS[status]
     return (f'Изменился статус проверки '
             f'работы "{homework_name}". {hw_verdict}')
 
