@@ -1,11 +1,11 @@
 # Yandex.Prakticum telegram bot
-This app helps to track the status of your review on the platform <br>
+This app helps to track the status of your homework on the platform <br>
 The is made on Python with a help of package [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot)
 ## How to use
 ### Localy
 Clone repository to your local machine
 ```shell
-$ git clone https://github.com/fibboo/ya.prakticum_telegram_bot.git
+$ git clone git@github.com:nastyatonkova/homework_bot.git
 ```
 Install python environment, activate and install requirements
 ```shell
