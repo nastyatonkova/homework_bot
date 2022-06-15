@@ -36,5 +36,6 @@ Authorize and choose forked repository.
 You can do it manly in section **Settings → Config Vars**. Press **Reveal Config Vars**
 Look for example in _.env.template_ file
 <img src="https://pictures.s3.yandex.net/resources/S07_12_1635158106.png">
+Don't use any '' by your environment variables!
 6. Go to **Resources** and activate worker
 <img src="https://pictures.s3.yandex.net/resources/S1_28_1633891678.png">
